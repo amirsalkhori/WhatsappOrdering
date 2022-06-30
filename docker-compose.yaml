@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  server:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: docker/nginx.dockerfile
+    ports:
+      - 8000:80
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - php
+
+  php:
+    container_name: php
+    build:
+      context: .
+      dockerfile: docker/php.dockerfile
+    ports:
+      - 9000:9000
+    volumes:
+      - ./app:/var/www/html
+
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:latest
+    env_file:
+      - database/database.env
+    volumes:
+      - ./database:/var/lib/postgresql
+      - arvan_db_data:/var/lib/postgresql/data:rw
+    ports:
+      - 5432:5432
+
+volumes:
+  arvan_db_data:
